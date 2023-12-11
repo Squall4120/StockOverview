@@ -1,5 +1,4 @@
 ﻿using System.Collections;
-using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using BepInEx;
@@ -17,7 +16,7 @@ namespace StockOverview
     }
 
     [BepInPlugin(PluginInfo.PLUGIN_GUID, PluginInfo.PLUGIN_NAME, PluginInfo.PLUGIN_VERSION)]
-    [BepInDependency("atomic.terminalapi", MinimumDependencyVersion: "1.3.2")]
+    [BepInDependency("atomic.terminalapi")]
 
     public class StockOverview : BaseUnityPlugin
     {

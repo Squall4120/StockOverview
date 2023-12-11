@@ -10,7 +10,8 @@ StockOverview is a mod for Lethal Company that enhances player's ability to trac
 
 ## Installation
 1. Install [BepInEx](https://thunderstore.io/c/lethal-company/p/BepInEx/BepInExPack/)
-2. Unzip this mod into your `Lethal Company/BepInEx` folder
+2. Install [TerminalApi](https://thunderstore.io/c/lethal-company/p/NotAtomicBomb/TerminalApi)
+3. Unzip this mod into your `Lethal Company/BepInEx` folder
 
 ## Usage
 - Use the `stock` command at the in-game terminal to view the scrap overview.
