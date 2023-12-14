@@ -11,7 +11,7 @@ namespace StockOverview
     public static class PluginInfo
     {
         public const string PLUGIN_NAME = "StockOverview";
-        public const string PLUGIN_VERSION = "1.0.0";
+        public const string PLUGIN_VERSION = "1.0.3";
         public const string PLUGIN_GUID = "squall4120.stockoverview";
     }
 
@@ -24,44 +24,47 @@ namespace StockOverview
         {
             Logger.LogInfo($"Plugin {PluginInfo.PLUGIN_NAME} is loaded!");
 
-            // Patch Harmony with mod ID
             Harmony harmony = new Harmony(PluginInfo.PLUGIN_GUID);
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             
             // Create "stock" keyword and node to trigger "stockoverview" terminalEvent
-            TerminalNode terminalNode = CreateTerminalNode("Scanning for scrap on ship...\n", true, "stockoverview");
-            TerminalKeyword stockKeyword = CreateTerminalKeyword("stock", true, terminalNode);
+            TerminalNode stockNode = CreateTerminalNode("Scanning for scrap on ship...\n", true, "stockoverview");
+            TerminalKeyword stockKeyword = CreateTerminalKeyword("stock", true, stockNode);
             AddTerminalKeyword(stockKeyword);
         }
 
         public static string BuildOverview()
         {
             // Display title
-            string displayText = "STOCK OVERVIEW\n\n";
+            string displayText = "STOCK OVERVIEW" + "\n\n";
 
             // Get all objects that can be picked up from inside the ship. Also remove items which technically have
             // scrap value but don't actually add to your quota.
             var loot = GameObject.Find("/Environment/HangarShip").GetComponentsInChildren<GrabbableObject>()
                 .Where(obj => obj.name != "ClipboardManual" && obj.name != "StickyNoteItem");
 
-            // Display the quantity and total value of all scrap first
-            displayText += string.Format("Quantity of all scrap: {0}", loot.Count()) + "\n";
-            displayText += string.Format("Total value of all scrap: ${0:F0}", loot.Sum(scrap => scrap.scrapValue)) + "\n";
-            displayText += "____________________________";
-            displayText += "\n\n";
+            string totalQuantity = "Quantity of all items: {0}";
+            string totalValue = "Total value of all items: ${0:F0}";
 
-            // Group scrap by item name and sort alphabetically
-            var groupedLoot = loot.GroupBy(scrap => scrap.itemProperties.itemName)
+            // Display the quantity and total value of all items first
+            displayText += string.Format(totalQuantity, loot.Count()) + "\n";
+            displayText += string.Format(totalValue, loot.Sum(item => item.scrapValue)) + "\n";
+            displayText += "____________________________" + "\n\n";
+
+            // Group items by item name and sort alphabetically
+            var groupedLoot = loot.GroupBy(item => item.itemProperties.itemName)
                 .OrderBy(group => group.Key).ToList();
 
-            // Display each group with detailed properties
+            string groupHeader = "{0} / x{1} / Total Value: ${2:F0}";
+            string singleItem = "  {0} - Value: ${1:F0}";
+
             foreach (var group in groupedLoot)
             {
                 // Display item name / quantity of item in group / total value of group
-                displayText += string.Format("{0} / x{1} / Total Value: ${2:F0}\n", group.Key, group.Count(), group.Sum(item => item.scrapValue));
+                displayText += string.Format(groupHeader, group.Key, group.Count(), group.Sum(item => item.scrapValue)) + "\n";
 
                 // Display each individual item with name and value
-                group.Do(item => displayText += string.Format("  {0} - Value: ${1:F0}\n", item.itemProperties.itemName, item.scrapValue));
+                group.Do(item => displayText += string.Format(singleItem, item.itemProperties.itemName, item.scrapValue) + "\n");
 
                 // Add a linebreak between groups
                 displayText += "\n";

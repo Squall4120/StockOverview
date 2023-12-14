@@ -1,6 +1,6 @@
 {
   "name": "StockOverview",
-  "version_number": "1.0.0",
+  "version_number": "1.0.3",
   "website_url": "https://github.com/Squall4120/StockOverview",
   "description": "Prints a detailed overview of collected scrap to the terminal.",
   "dependencies": [
